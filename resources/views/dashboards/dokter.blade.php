@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Dashboard Dokter</h1>
-    <p>Area untuk dokter melihat jadwal dan reservasi pasien.</p>
+    <p>Template tempat buat ngecode punyanya Dogter ya :D</p>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf

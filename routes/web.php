@@ -3,9 +3,38 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 Route::view('/', 'welcome')->name('home');
+
+Route::get('/cek-db', function () {
+    abort_unless(app()->isLocal(), 404);
+
+    try {
+        DB::connection()->getPdo();
+
+        $tables = ['users', 'doctors', 'schedules', 'reservations'];
+
+        return response()->json([
+            'laravel' => 'ok',
+            'database' => 'connected',
+            'connection' => config('database.default'),
+            'database_name' => DB::connection()->getDatabaseName(),
+            'tables' => collect($tables)
+                ->mapWithKeys(fn (string $table): array => [
+                    $table => Schema::hasTable($table) ? 'exists' : 'missing',
+                ]),
+        ]);
+    } catch (\Throwable $exception) {
+        return response()->json([
+            'laravel' => 'ok',
+            'database' => 'error',
+            'message' => $exception->getMessage(),
+        ], 500);
+    }
+})->name('health.database');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');

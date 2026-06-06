@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Dashboard Admin</h1>
-    <p>Area untuk manajemen user, dokter, jadwal, dan data master.</p>
+    <p>Buat Admint Nanti code admin bisa disini, harusnya bisa tambah lagi kalau perlu fitur keren awokwaowok :D</p>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf
