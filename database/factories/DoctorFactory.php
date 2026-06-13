@@ -17,7 +17,7 @@ class DoctorFactory extends Factory
     {
         return [
             'user_id' => User::factory()->create(['role' => User::ROLE_DOKTER])->id,
-            'specialization' => fake()->randomElement(['Umum', 'Anak']),
+            'specialization' => fake()->randomElement(['Umum', 'Gigi', 'Mata', 'Anak']),
             'description' => fake()->sentence(),
             'photo' => null,
         ];
