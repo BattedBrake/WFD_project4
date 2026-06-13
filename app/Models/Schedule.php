@@ -26,4 +26,9 @@ class Schedule extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+
+    public function hasAvailableQuota(): bool
+    {
+        return $this->reservations()->whereIn('status', [Reservation::STATUS_PENDING, Reservation::STATUS_HOLD])->count() < $this->quota;
+    }
 }
