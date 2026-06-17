@@ -163,9 +163,12 @@ class ReservationController extends Controller
         abort_unless($user->hasRole(User::ROLE_PASIEN), 403);
         abort_unless($reservasi->user_id === $user->id && $reservasi->canBeCancelled(), 403);
 
-        $reservasi->delete();
+        $reservasi->update(['status' => Reservation::STATUS_CANCELLED]);
 
-        return $this->success(null, 'Reservasi berhasil dihapus');
+        return $this->success(
+            $reservasi->fresh()->load(['user:id,name,email,phone,role', 'schedule.doctor.user:id,name,email,phone,role']),
+            'Reservasi berhasil dibatalkan'
+        );
     }
 
     private function canAccessReservation(User $user, Reservation $reservation): bool

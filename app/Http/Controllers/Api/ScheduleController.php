@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -25,7 +26,7 @@ class ScheduleController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $schedule = Schedule::query()->create($this->validateSchedule($request));
+        $schedule = Schedule::query()->create($this->validateSchedule($request, null, $request->user()));
 
         return $this->success(
             $schedule->load('doctor.user:id,name,email,phone,role'),
@@ -44,7 +45,7 @@ class ScheduleController extends Controller
 
     public function update(Request $request, Schedule $jadwal): JsonResponse
     {
-        $jadwal->update($this->validateSchedule($request, $jadwal));
+        $jadwal->update($this->validateSchedule($request, $jadwal, $request->user()));
 
         return $this->success(
             $jadwal->fresh()->load('doctor.user:id,name,email,phone,role'),
@@ -66,15 +67,31 @@ class ScheduleController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function validateSchedule(Request $request, ?Schedule $currentSchedule = null): array
+    private function validateSchedule(Request $request, ?Schedule $currentSchedule = null, ?User $user = null): array
     {
+        $doctorIdRules = $user?->hasRole(User::ROLE_DOKTER)
+            ? ['prohibited']
+            : ['required', 'exists:doctors,id'];
+
         $validated = $request->validate([
-            'doctor_id' => ['required', 'exists:doctors,id'],
+            'doctor_id' => $doctorIdRules,
             'date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'quota' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
+
+        if ($user?->hasRole(User::ROLE_DOKTER)) {
+            $doctor = $user->doctor;
+
+            if (! $doctor) {
+                throw ValidationException::withMessages([
+                    'doctor_id' => 'Akun dokter ini belum memiliki profil dokter.',
+                ]);
+            }
+
+            $validated['doctor_id'] = $doctor->id;
+        }
 
         $validated['start_time'] = $this->normalizeTime($validated['start_time']);
         $validated['end_time'] = $this->normalizeTime($validated['end_time']);

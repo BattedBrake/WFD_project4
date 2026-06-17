@@ -90,6 +90,28 @@ class AdminCrudAuthorizationTest extends TestCase
         $response->assertJsonValidationErrors('start_time');
     }
 
+    public function test_doctor_can_create_own_schedule(): void
+    {
+        $doctorUser = User::factory()->create(['role' => User::ROLE_DOKTER]);
+        $doctor = Doctor::factory()->create(['user_id' => $doctorUser->id]);
+
+        $response = $this->actingAs($doctorUser)->postJson('/api/v1/jadwal', [
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '13:00',
+            'end_time' => '14:00',
+            'quota' => 3,
+        ]);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('schedules', [
+            'doctor_id' => $doctor->id,
+            'start_time' => '13:00:00',
+            'end_time' => '14:00:00',
+            'quota' => 3,
+        ]);
+    }
+
     public function test_patient_cannot_access_admin_crud(): void
     {
         $patient = User::factory()->create(['role' => User::ROLE_PASIEN]);
@@ -144,6 +166,27 @@ class AdminCrudAuthorizationTest extends TestCase
             'schedule_id' => $schedule->id,
             'complaint' => 'Sakit kepala',
             'status' => Reservation::STATUS_PENDING,
+        ]);
+    }
+
+    public function test_patient_cancels_own_reservation_without_deleting_it(): void
+    {
+        $patient = User::factory()->create(['role' => User::ROLE_PASIEN]);
+        $schedule = Schedule::factory()->create();
+        $reservation = Reservation::query()->create([
+            'user_id' => $patient->id,
+            'schedule_id' => $schedule->id,
+            'complaint' => 'Batalkan jadwal',
+            'status' => Reservation::STATUS_PENDING,
+        ]);
+
+        $response = $this->actingAs($patient)->deleteJson("/api/v1/reservasi/{$reservation->id}");
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+            'status' => Reservation::STATUS_CANCELLED,
         ]);
     }
 

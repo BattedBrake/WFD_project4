@@ -20,11 +20,12 @@ Route::prefix('v1')->group(function (): void {
 
         Route::apiResource('dokter', DoctorController::class)->only(['index', 'show']);
         Route::apiResource('jadwal', ScheduleController::class)->only(['index', 'show']);
+        Route::post('/jadwal', [ScheduleController::class, 'store'])->middleware('role:admin,dokter');
         Route::apiResource('reservasi', ReservationController::class);
 
         Route::middleware('role:admin')->group(function (): void {
             Route::apiResource('dokter', DoctorController::class)->except(['index', 'show']);
-            Route::apiResource('jadwal', ScheduleController::class)->except(['index', 'show']);
+            Route::apiResource('jadwal', ScheduleController::class)->only(['update', 'destroy']);
             Route::apiResource('users', UserController::class);
         });
     });
