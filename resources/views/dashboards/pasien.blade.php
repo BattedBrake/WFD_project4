@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Dashboard Pasien</h1>
-    <p>Area untuk pasien mencari jadwal dokter dan membuat reservasi.</p>
+    <p>Dashboard Pasien ya :D</p>
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf

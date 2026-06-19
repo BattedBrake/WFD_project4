@@ -49,10 +49,6 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/admin/dashboard', [DashboardController::class, 'admin'])
-        ->middleware('role:admin')
-        ->name('admin.dashboard');
-
     Route::get('/dokter/dashboard', [DashboardController::class, 'dokter'])
         ->middleware('role:dokter')
         ->name('dokter.dashboard');
@@ -61,3 +57,5 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:pasien')
         ->name('pasien.dashboard');
 });
+
+require __DIR__.'/admin.php';
