@@ -8,9 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="bg-slate-50 font-sans antialiased">
+    <input type="checkbox" id="sidebar-toggle" class="peer hidden">
+    <label for="sidebar-toggle" class="fixed inset-0 z-30 hidden bg-slate-900/50 peer-checked:block md:hidden"></label>
 
     <div class="flex h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between hidden md:flex">
+        <aside class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col justify-between bg-slate-900 text-white transition-transform duration-200 peer-checked:translate-x-0 md:static md:translate-x-0">
             <div class="p-5">
                 <div class="flex items-center gap-3 mb-8">
                     <span class="grid h-9 w-9 place-items-center rounded-xl bg-blue-500 text-white">
@@ -44,17 +46,29 @@
             </div>
         </aside>
 
-        <div class="flex-grow flex flex-col overflow-y-auto">
-            <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-10">
-                <h1 class="text-xl font-bold text-slate-800">Dashboard Pasien</h1>
+        <div class="flex min-w-0 flex-grow flex-col overflow-y-auto">
+            <header class="bg-white border-b border-slate-200 px-4 py-4 flex justify-between items-center sticky top-0 z-10 sm:px-8">
+                <div class="flex items-center gap-3">
+                    <label for="sidebar-toggle" class="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-600 md:hidden">
+                        <i class="fa-solid fa-bars"></i>
+                    </label>
+                    <h1 class="text-xl font-bold text-slate-800">Dashboard Pasien</h1>
+                </div>
                 
                 <div class="flex items-center gap-3">
                     <div class="text-right">
                         <p class="text-sm font-semibold text-slate-700">{{ Auth::user()->name }}</p>
                         <p class="text-xs text-slate-400 capitalize">{{ Auth::user()->role }}</p>
                     </div>
-                    <div class="h-10 w-10 rounded-full bg-blue-100 text-blue-600 font-bold grid place-items-center uppercase border border-blue-200">
-                        {{ substr(Auth::user()->name, 0, 2) }}
+                    
+                    <div class="h-10 w-10 overflow-hidden rounded-full border border-slate-200">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="h-full w-full object-cover" alt="Foto Profil">
+                        @else
+                            <div class="h-full w-full bg-blue-100 text-blue-600 font-bold grid place-items-center uppercase text-sm">
+                                {{ substr(Auth::user()->name, 0, 2) }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </header>
@@ -74,25 +88,27 @@
                         </div>
                         <div>
                             <p class="text-sm font-medium text-slate-400">Reservasi Menunggu</p>
-                            <p class="text-2xl font-bold text-slate-800">0</p>
+                            <p class="text-2xl font-bold text-slate-800">{{ $jumlahMenunggu }}</p>
                         </div>
                     </div>
+
                     <div class="bg-white border border-slate-200 rounded-2xl p-6 flex items-center gap-5 shadow-sm">
                         <div class="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-500 grid place-items-center text-xl">
                             <i class="fa-solid fa-calendar-check"></i>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-slate-400">Reservasi Disetujui</p>
-                            <p class="text-2xl font-bold text-slate-800">0</p>
+                            <p class="text-2xl font-bold text-slate-800">{{ $jumlahDisetujui }}</p>
                         </div>
                     </div>
+
                     <div class="bg-white border border-slate-200 rounded-2xl p-6 flex items-center gap-5 shadow-sm sm:col-span-2 lg:col-span-1">
                         <div class="h-12 w-12 rounded-xl bg-blue-50 text-blue-500 grid place-items-center text-xl">
                             <i class="fa-solid fa-clipboard-list"></i>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-slate-400">Total Riwayat Periksa</p>
-                            <p class="text-2xl font-bold text-slate-800">0</p>
+                            <p class="text-2xl font-bold text-slate-800">{{ $totalRiwayat }}</p>
                         </div>
                     </div>
                 </div>
@@ -100,5 +116,15 @@
         </div>
     </div>
 
+    <script>
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.querySelector('aside');
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('change', () => {
+                sidebar.classList.toggle('-translate-x-full', !sidebarToggle.checked);
+            });
+        }
+    </script>
 </body>
 </html>

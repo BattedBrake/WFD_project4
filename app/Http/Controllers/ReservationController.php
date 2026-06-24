@@ -22,7 +22,7 @@ class ReservationController extends Controller
                 ->latest()
                 ->get();
 
-            return view('reservations.index', [
+            return view('dokter.doctor_change_reservation', [
                 'reservations' => $reservations,
                 'isDoctor' => true,
             ]);
@@ -34,7 +34,7 @@ class ReservationController extends Controller
             ->latest()
             ->get();
 
-        return view('reservations.index', [
+        return view('pasien.index', [
             'reservations' => $reservations,
             'isDoctor' => false,
         ]);
@@ -49,7 +49,7 @@ class ReservationController extends Controller
             ->filter(fn (Schedule $schedule): bool => $schedule->hasAvailableQuota())
             ->values();
 
-        return view('reservations.create', compact('schedules'));
+        return view('pasien.create', compact('schedules'));
     }
 
     public function store(Request $request): RedirectResponse

@@ -14,11 +14,13 @@
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
+<input type="checkbox" id="admin-sidebar-toggle" class="peer hidden">
+<label for="admin-sidebar-toggle" class="fixed inset-0 z-30 hidden bg-gray-900/50 peer-checked:block lg:hidden"></label>
 
 <div class="flex h-screen overflow-hidden">
 
     {{-- SIDEBAR --}}
-    <aside class="w-64 bg-white shadow-lg flex flex-col flex-shrink-0">
+    <aside class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-white shadow-lg transition-transform duration-200 peer-checked:translate-x-0 lg:static lg:translate-x-0">
         {{-- Logo --}}
         <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
             <div class="bg-sky-500 rounded-xl p-2">
@@ -88,12 +90,17 @@
     </aside>
 
     {{-- MAIN CONTENT --}}
-    <main class="flex-1 flex flex-col overflow-hidden">
+    <main class="flex min-w-0 flex-1 flex-col overflow-hidden">
         {{-- Top Header --}}
-        <header class="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between flex-shrink-0">
-            <div>
-                <h1 class="text-lg font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h1>
-                <p class="text-xs text-gray-400">@yield('page-subtitle', 'Selamat datang di panel administrasi')</p>
+        <header class="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between flex-shrink-0 sm:px-8">
+            <div class="flex items-center gap-3">
+                <label for="admin-sidebar-toggle" class="grid h-10 w-10 place-items-center rounded-xl border border-gray-200 text-gray-600 lg:hidden">
+                    <i class="fa-solid fa-bars"></i>
+                </label>
+                <div>
+                    <h1 class="text-lg font-semibold text-gray-800">@yield('page-title', 'Dashboard')</h1>
+                    <p class="text-xs text-gray-400">@yield('page-subtitle', 'Selamat datang di panel administrasi')</p>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <span class="text-xs text-gray-400">{{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}</span>
@@ -101,7 +108,7 @@
         </header>
 
         {{-- Page Content --}}
-        <div class="flex-1 overflow-y-auto px-8 py-6">
+        <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-8">
             {{-- Alert Messages --}}
             @if(session('success'))
                 <div class="mb-4 flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
@@ -122,5 +129,15 @@
 
 </div>
 
+<script>
+    const adminSidebarToggle = document.getElementById('admin-sidebar-toggle');
+    const adminSidebar = document.querySelector('aside');
+
+    if (adminSidebarToggle && adminSidebar) {
+        adminSidebarToggle.addEventListener('change', () => {
+            adminSidebar.classList.toggle('-translate-x-full', !adminSidebarToggle.checked);
+        });
+    }
+</script>
 </body>
 </html>

@@ -20,6 +20,9 @@
 /storage/pail
 /vendor
 update_not_git/
+resources/views/dokter/doctor_dashboard.php
+resources/views/dokter/doctor_change_reservation.php
+resources/views/dokter/doctor_schedule.php
 Homestead.json
 Homestead.yaml
 Thumbs.db

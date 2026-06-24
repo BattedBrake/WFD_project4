@@ -1,4 +1,4 @@
-db_data/
-.env
-vendor/
-node_modules/
+db_data
+vendor
+node_modules
+.git

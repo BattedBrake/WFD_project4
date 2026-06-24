@@ -54,6 +54,22 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:dokter')
         ->name('dokter.dashboard');
 
+    Route::get('/dokter/jadwal', [DashboardController::class, 'doctorSchedule'])
+        ->middleware('role:dokter')
+        ->name('dokter.schedules');
+
+    Route::get('/dokter/jadwal/create', [DashboardController::class, 'doctorCreateSchedule'])
+        ->middleware('role:dokter')
+        ->name('dokter.schedules.create');
+
+    Route::post('/dokter/jadwal', [DashboardController::class, 'doctorStoreSchedule'])
+        ->middleware('role:dokter')
+        ->name('dokter.schedules.store');
+
+    Route::get('/dokter/reservasi', [ReservationController::class, 'index'])
+        ->middleware('role:dokter')
+        ->name('dokter.reservations');
+
     Route::get('/pasien/dashboard', [DashboardController::class, 'pasien'])
         ->middleware('role:pasien')
         ->name('pasien.dashboard');
